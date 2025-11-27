@@ -16,31 +16,47 @@ import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import com.tom_planche_nils_galloux.passguard.data.local.ProfileDataStore
+import com.tom_planche_nils_galloux.passguard.data.repository.ProfileRepository
+import com.tom_planche_nils_galloux.passguard.data.repository.ProfileRepositoryImpl
 import com.tom_planche_nils_galloux.passguard.ui.navigation.PassGuardNavHost
 import com.tom_planche_nils_galloux.passguard.ui.navigation.Screen
 import com.tom_planche_nils_galloux.passguard.ui.theme.PassGuardTheme
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
+
+        val dataStore = ProfileDataStore(applicationContext)
+        val repository: ProfileRepository = ProfileRepositoryImpl(dataStore)
+
+        CoroutineScope(Dispatchers.IO).launch {
+            repository.initializeDefaultProfiles()
+        }
+
         setContent {
             PassGuardTheme {
-                PassGuardApp()
+                PassGuardApp(repository = repository)
             }
         }
     }
 }
 
 @Composable
-fun PassGuardApp() {
+fun PassGuardApp(repository: ProfileRepository) {
     val navController = rememberNavController()
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentDestination = navBackStackEntry?.destination
@@ -95,6 +111,7 @@ fun PassGuardApp() {
     ) { innerPadding ->
         PassGuardNavHost(
             navController = navController,
+            repository = repository,
             modifier = Modifier.padding(innerPadding)
         )
     }

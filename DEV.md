@@ -34,6 +34,16 @@ PassGuard/
 ```
 passguard/
 ├── MainActivity.kt               # App entry point
+├── data/                         # Data layer
+│   ├── model/                    # Data models
+│   │   ├── RuleProfile.kt        # Password rule profile model
+│   │   ├── CharacterType.kt      # Character type enum
+│   │   └── CharacterRequirement.kt # Requirement level enum
+│   ├── local/                    # Local data sources
+│   │   └── ProfileDataStore.kt   # DataStore implementation for profiles
+│   └── repository/               # Repository pattern
+│       ├── ProfileRepository.kt  # Repository interface
+│       └── ProfileRepositoryImpl.kt # Repository implementation
 └── ui/
     ├── navigation/               # Navigation components
     │   ├── Screen.kt             # Route definitions
@@ -76,15 +86,28 @@ passguard/
 
 ### Source Files
 
+#### Data Layer
+
+| File | Description |
+|------|-------------|
+| `RuleProfile.kt` | Data class for password rule profiles with factory methods for pre-configured profiles (Default, Gmail, Banking, Gaming) |
+| `CharacterType.kt` | Enum defining character types (UPPERCASE, LOWERCASE, DIGITS, SYMBOLS) with character sets |
+| `CharacterRequirement.kt` | Enum defining requirement levels (REQUIRED, OPTIONAL, FORBIDDEN) for character types |
+| `ProfileDataStore.kt` | DataStore-based persistence layer for profiles with JSON serialization, CRUD operations, and import/export functionality |
+| `ProfileRepository.kt` | Repository interface defining the contract for profile data operations |
+| `ProfileRepositoryImpl.kt` | Concrete implementation of ProfileRepository using ProfileDataStore |
+
+#### UI Layer
+
 | File | Description |
 |------|-------------|
 | `MainActivity.kt` | Main activity with Jetpack Compose setup, bottom navigation bar, and app scaffold |
 | `Screen.kt` | Sealed class defining navigation routes for all screens |
 | `PassGuardNavHost.kt` | Navigation host composable managing screen transitions |
-| `PasswordGeneratorScreen.kt` | Screen for generating passwords with configurable rules |
-| `PasswordCheckerScreen.kt` | Screen for validating passwords against rules |
-| `RuleProfilesScreen.kt` | Screen listing all saved rule profiles |
-| `EditRuleScreen.kt` | Screen for creating or editing rule profiles |
+| `PasswordGeneratorScreen.kt` | Screen for generating passwords with configurable rules (skeleton implementation) |
+| `PasswordCheckerScreen.kt` | Screen for validating passwords against rules (skeleton implementation) |
+| `RuleProfilesScreen.kt` | Screen listing all saved rule profiles (skeleton implementation) |
+| `EditRuleScreen.kt` | Screen for creating or editing rule profiles (skeleton implementation) |
 
 ### Theme Files
 
@@ -114,9 +137,19 @@ passguard/
 
 The app follows the **MVVM** (Model-View-ViewModel) architecture pattern:
 
-- **View**: Composable screens in `ui/screens/`
-- **ViewModel**: (To be implemented) Business logic and state management
-- **Model**: (To be implemented) Data classes and repository layer
+- **View**: Composable screens in `ui/screens/` (skeleton implementations)
+- **ViewModel**: (To be implemented in Iteration 2) Business logic and state management
+- **Model**: Data classes in `data/model/` with Repository pattern for data operations
+
+### Data Layer (Implemented)
+
+The data layer consists of:
+
+- **Models** (`data/model/`): Serializable data classes representing password rule profiles
+- **Local Data Source** (`data/local/`): DataStore-based persistence with JSON serialization
+- **Repository** (`data/repository/`): Abstraction layer providing clean API for data operations
+
+The repository pattern allows for easy testing and potential future addition of remote data sources.
 
 ## Navigation
 
@@ -148,8 +181,22 @@ The `EditRuleScreen` is a detail screen accessible from `Profiles` and hides the
 
 Key dependencies (managed in `libs.versions.toml`):
 
-- **Jetpack Compose** - Modern declarative UI toolkit
+### UI & Navigation
+- **Jetpack Compose** (BOM 2024.09.00) - Modern declarative UI toolkit
 - **Material 3** - Material Design 3 components
-- **Navigation Compose** - Type-safe navigation for Compose
-- **AndroidX Core KTX** - Kotlin extensions for Android APIs
-- **Lifecycle Runtime KTX** - Lifecycle-aware components
+- **Navigation Compose** (2.7.7) - Type-safe navigation for Compose
+- **Activity Compose** (1.8.0) - Compose integration for activities
+
+### Data & State Management
+- **DataStore Preferences** (1.0.0) - Modern data storage solution with async API
+- **Kotlinx Serialization JSON** (1.6.0) - Kotlin serialization library for JSON
+- **Lifecycle ViewModel Compose** (2.6.1) - ViewModel integration for Compose
+- **Lifecycle Runtime KTX** (2.6.1) - Lifecycle-aware components
+
+### Core Libraries
+- **AndroidX Core KTX** (1.10.1) - Kotlin extensions for Android APIs
+
+### Testing
+- **JUnit** (4.13.2) - Unit testing framework
+- **AndroidX JUnit** (1.1.5) - Android testing extensions
+- **Espresso Core** (3.5.1) - UI testing framework
