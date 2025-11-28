@@ -8,6 +8,8 @@ PassGuard is an Android mobile application that allows you to create strong and 
 
 ## Features
 
+The following features describe the complete vision for PassGuard. See [Development Status](#development-status) for current implementation progress.
+
 ### Password Generator
 
 Generate random passwords based on configurable rules.
@@ -97,7 +99,38 @@ Test the compliance of an existing password against defined rules.
 
 - **Language**: Kotlin
 - **IDE**: Android Studio
-- **Platform**: Android
+- **Platform**: Android (API 28+)
+- **UI Framework**: Jetpack Compose with Material 3
+- **Architecture**: MVVM (Model-View-ViewModel)
+- **Navigation**: Jetpack Navigation Compose
+- **Data Persistence**: DataStore Preferences
+- **Serialization**: Kotlinx Serialization JSON
+
+## Architecture
+
+PassGuard follows the **MVVM (Model-View-ViewModel)** architecture pattern with a clean separation of concerns:
+
+### Data Layer
+- **Models** (`data/model/`): Serializable data classes for password rule profiles
+  - `RuleProfile`: Main profile data class with factory methods for pre-configured profiles
+  - `CharacterType`: Enum for character types (uppercase, lowercase, digits, symbols)
+  - `CharacterRequirement`: Enum for requirement levels (required, optional, forbidden)
+- **Local Data Source** (`data/local/`): DataStore-based persistence
+  - `ProfileDataStore`: Handles JSON serialization and CRUD operations
+- **Repository** (`data/repository/`): Abstraction layer for data operations
+  - `ProfileRepository`: Interface defining the data contract
+  - `ProfileRepositoryImpl`: Concrete implementation
+
+### UI Layer
+- **Screens** (`ui/screens/`): Jetpack Compose UI components
+  - Generator, Checker, Profiles, and EditRule screens
+- **ViewModels** (`ui/viewmodel/`): State management and business logic (in progress)
+- **Navigation** (`ui/navigation/`): Navigation graph with bottom navigation bar
+
+### Benefits
+- **Testability**: Clean separation allows easy unit testing of business logic
+- **Maintainability**: Clear structure makes code easier to understand and modify
+- **Scalability**: Repository pattern allows easy addition of remote data sources
 
 ## Installation
 
